@@ -64,6 +64,7 @@
 #include "ttyrec.h"
 #include "io.h"
 
+#define HAVE_openpty
 #define HAVE_inet_aton
 #define HAVE_scsi_h
 #define HAVE_kd_h
@@ -71,7 +72,7 @@
 #define _(FOO) FOO
 
 #ifdef HAVE_openpty
-#include <libutil.h>
+#include <pty.h>
 #endif
 
 #if defined(SVR4) && !defined(CDEL)
@@ -325,9 +326,9 @@ doshell(const char* command)
 	(void) close(slave);
 
 	if (!command) {
-		execl(shell, strrchr(shell, '/') + 1, "-i", 0);
+		execl(shell, strrchr(shell, '/') + 1, "-i", NULL);
 	} else {
-		execl(shell, strrchr(shell, '/') + 1, "-c", command, 0);	
+		execl(shell, strrchr(shell, '/') + 1, "-c", command, NULL);	
 	}
 	perror(shell);
 	fail();

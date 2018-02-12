@@ -10,7 +10,7 @@ DIST =	ttyrec.c ttyplay.c ttyrec.h io.c io.h ttytime.c\
 all: $(TARGET)
 
 ttyrec: ttyrec.o io.o
-	$(CC) $(CFLAGS) -o ttyrec ttyrec.o io.o
+	$(CC) $(CFLAGS) -o ttyrec ttyrec.o io.o -lutil
 
 ttyplay: ttyplay.o io.o
 	$(CC) $(CFLAGS) -o ttyplay ttyplay.o io.o

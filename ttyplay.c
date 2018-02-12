@@ -49,6 +49,7 @@ typedef int	(*ReadFunc)	(FILE *fp, Header *h, char **buf);
 typedef void	(*WriteFunc)	(char *buf, int len);
 typedef void	(*ProcessFunc)	(FILE *fp, double speed, 
 				 ReadFunc read_func, WaitFunc wait_func);
+static int quit;
 
 struct timeval
 timeval_diff (struct timeval tv1, struct timeval tv2)
@@ -80,10 +81,15 @@ timeval_div (struct timeval tv1, double n)
 double
 ttywait (struct timeval prev, struct timeval cur, double speed)
 {
-    static struct timeval drift = {0, 0};
+    static struct timeval drift;
     struct timeval start;
-    struct timeval diff = timeval_diff(prev, cur);
+    struct timeval diff;
     fd_set readfs;
+    int pause = 0;
+
+restart:
+    drift.tv_sec = drift.tv_usec = 0;
+    diff = timeval_diff(prev, cur);
 
     gettimeofday(&start, NULL);
 
@@ -104,12 +110,21 @@ ttywait (struct timeval prev, struct timeval cur, double speed)
     select(1, &readfs, NULL, NULL, &diff);
     diff = orig_diff;  /* Restore the original diff value. */
     if (FD_ISSET(0, &readfs)) { /* a user hits a character? */
-        char c;
+        char c = 0;
         read(STDIN_FILENO, &c, 1); /* drain the character */
         switch (c) {
         case '+':
         case 'f':
             speed *= 2;
+            break;
+        case 'Q':
+            quit = 1;
+            break;
+        case 'p':
+            pause = 1;
+            break;
+        case 'r':
+            pause = 0;
             break;
         case '-':
         case 's':
@@ -129,6 +144,10 @@ ttywait (struct timeval prev, struct timeval cur, double speed)
         }
 	drift = timeval_diff(diff, timeval_diff(start, stop));
     }
+
+    if (pause)
+        goto restart;
+
     return speed;
 }
 
@@ -193,7 +212,7 @@ ttyplay (FILE *fp, double speed, ReadFunc read_func,
     setbuf(stdout, NULL);
     setbuf(fp, NULL);
 
-    while (1) {
+    while (!quit) {
 	char *buf;
 	Header h;
 
@@ -242,6 +261,15 @@ usage (void)
     printf("  -s SPEED Set speed to SPEED [1.0]\n");
     printf("  -n       No wait mode\n");
     printf("  -p       Peek another person's ttyrecord\n");
+    printf("\n");
+    printf("Keys during playback:\n");
+    printf("  '+/f'    double speed\n");
+    printf("  '-/s'    half speed\n");
+    printf("  '1'      original speed\n");
+    printf("  'p'      pause\n");
+    printf("  'r'      resume\n");
+    printf("  'q'      quit\n");
+    printf("\n");
     exit(EXIT_FAILURE);
 }
 
