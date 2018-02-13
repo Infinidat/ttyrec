@@ -1,0 +1,5 @@
+*.o
+ttyrec
+ttyplay
+ttytime
+ttyrecord

@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O2
+CFLAGS = -O2 -g
 VERSION = 1.0.8
 
 TARGET = ttyrec ttyplay ttytime
@@ -13,7 +13,7 @@ ttyrec: ttyrec.o io.o
 	$(CC) $(CFLAGS) -o ttyrec ttyrec.o io.o -lutil
 
 ttyplay: ttyplay.o io.o
-	$(CC) $(CFLAGS) -o ttyplay ttyplay.o io.o
+	$(CC) $(CFLAGS) -o ttyplay ttyplay.o io.o -lm -g
 
 ttytime: ttytime.o io.o
 	$(CC) $(CFLAGS) -o ttytime ttytime.o io.o

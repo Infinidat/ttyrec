@@ -54,6 +54,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <signal.h>
 
 #if defined(SVR4)
 #include <fcntl.h>
