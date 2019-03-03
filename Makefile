@@ -1,10 +1,11 @@
+VERSION = 1.0.8-v2
+
 CC = gcc
-CFLAGS = -O2 -g
-VERSION = 1.0.8
+CFLAGS = -O2 -g -DHOSTNAME='"$(shell hostname)"' -DUSERNAME='"$(shell id --user --name)"' -DTTYREC_VERSION='"$(VERSION)"' -DGIT_REVISION='"$(shell git rev-parse HEAD)"'
 
 TARGET = ttyrec ttyplay ttytime
 
-DIST =	ttyrec.c ttyplay.c ttyrec.h io.c io.h ttytime.c\
+DIST =	ttyrec.c ttyplay.c ttyrec.h io.c io.h ttytime.c \
 	README Makefile ttyrec.1 ttyplay.1 ttytime.1
 
 all: $(TARGET)

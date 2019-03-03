@@ -159,3 +159,13 @@ efdopen (int fd, const char *mode)
 	exit(EXIT_FAILURE);
     }
 }
+
+void show_banner(void)
+{
+    fprintf(stderr, "Compiled on %s %s, build machine: %s@%s\n",
+            __DATE__, __TIME__, USERNAME, HOSTNAME);
+    fprintf(stderr, "Version: %s\n", TTYREC_VERSION);
+    fprintf(stderr, "Git revision: %s\n", GIT_REVISION);
+    fprintf(stderr, "\n");
+}
+

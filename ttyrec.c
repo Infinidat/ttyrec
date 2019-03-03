@@ -31,7 +31,7 @@
  * SUCH DAMAGE.
  */
 
-/* 1999-02-22 Arkadiusz Mi¶kiewicz <misiek@misiek.eu.org>
+/* 1999-02-22 Arkadiusz MiÂ¶kiewicz <misiek@misiek.eu.org>
  * - added Native Language Support
  */
 
@@ -86,7 +86,7 @@
 #endif /* not _POSIX_VISIBLE && not CDISABLE */
 #endif /* SVR4 && ! CDEL */
 
-void done(void);
+void done(int status);
 void fail(void);
 void fixtty(void);
 void getmaster(void);
@@ -140,6 +140,7 @@ main(argc, argv)
 		case 'h':
 		case '?':
 		default:
+			show_banner();
 			fprintf(stderr, _("usage: ttyrec [-u] [-e command] [-a] [file]\n"));
 			exit(1);
 		}
@@ -197,7 +198,7 @@ doinput()
 #endif
 	while ((cc = read(0, ibuf, BUFSIZ)) > 0)
 		(void) write(master, ibuf, cc);
-	done();
+	done(0);
 }
 
 #include <sys/wait.h>
@@ -208,17 +209,27 @@ finish()
 #if defined(SVR4)
 	int status;
 #else /* !SVR4 */
-	union wait status;
+	int status;
 #endif /* !SVR4 */
 	register int pid;
 	register int die = 0;
 
+	int exit_status = 0;
+
 	while ((pid = wait3((int *)&status, WNOHANG, 0)) > 0)
-		if (pid == child)
+		if (pid == child) {
 			die = 1;
 
-	if (die)
-		done();
+			if (WIFEXITED(status)) {
+				exit_status = WEXITSTATUS(status);
+			} else {
+				exit_status = 1;
+			}
+		}
+
+	if (die) {
+		done(exit_status);
+	}
 }
 
 struct linebuf {
@@ -303,7 +314,7 @@ dooutput()
 		(void) write_header(fscript, &h);
 		(void) fwrite(obuf, 1, cc, fscript);
 	}
-	done();
+	done(0);
 }
 
 void
@@ -361,13 +372,12 @@ fixtty()
 void
 fail()
 {
-
 	(void) kill(0, SIGTERM);
-	done();
+	done(1);
 }
 
 void
-done()
+done(int status)
 {
 	if (subchild) {
 		(void) fclose(fscript);
@@ -375,7 +385,7 @@ done()
 	} else {
 		(void) tcsetattr(0, TCSAFLUSH, &tt);
 	}
-	exit(0);
+	exit(status);
 }
 
 void

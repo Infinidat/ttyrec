@@ -279,7 +279,7 @@ static void print_time(Header* h)
     int n;
 
     static char tm_buff[256];
-    static last_sec;
+    // static int last_sec;
 
     if (opt_utc) {
         if (!gmtime_r(&sec, &tm)) {
@@ -502,6 +502,7 @@ main (int argc, char **argv)
                 break;
             case 'h':
             default:
+                show_banner();
                 usage(1);
         }
     }

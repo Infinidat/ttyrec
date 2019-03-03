@@ -8,5 +8,6 @@ typedef struct header {
     int len;
 } Header;
 
+void show_banner(void);
 
 #endif
