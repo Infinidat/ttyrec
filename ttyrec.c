@@ -65,9 +65,7 @@
 #include "ttyrec.h"
 #include "io.h"
 
-#ifndef __APPLE__
 #define HAVE_openpty
-#endif
 #define HAVE_inet_aton
 #define HAVE_scsi_h
 #define HAVE_kd_h
@@ -75,7 +73,11 @@
 #define _(FOO) FOO
 
 #ifdef HAVE_openpty
+#ifdef __APPLE__
+#include <util.h>
+#else
 #include <pty.h>
+#endif
 #endif
 
 #if defined(SVR4) && !defined(CDEL)
