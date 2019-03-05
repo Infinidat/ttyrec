@@ -1,7 +1,7 @@
 VERSION = 1.0.8-v2
 
 CC = gcc
-CFLAGS = -O2 -g -DHOSTNAME='"$(shell hostname)"' -DUSERNAME='"$(shell id --user --name)"' -DTTYREC_VERSION='"$(VERSION)"' -DGIT_REVISION='"$(shell git rev-parse HEAD)"'
+CFLAGS = -O2 -g -DHOSTNAME='"$(shell hostname)"' -DUSERNAME='"$(shell id -u -n)"' -DTTYREC_VERSION='"$(VERSION)"' -DGIT_REVISION='"$(shell git rev-parse HEAD)"'
 
 TARGET = ttyrec ttyplay ttytime
 

@@ -65,7 +65,9 @@
 #include "ttyrec.h"
 #include "io.h"
 
+#ifndef __APPLE__
 #define HAVE_openpty
+#endif
 #define HAVE_inet_aton
 #define HAVE_scsi_h
 #define HAVE_kd_h

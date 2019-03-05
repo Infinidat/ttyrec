@@ -158,6 +158,7 @@ efdopen (int fd, const char *mode)
 	fprintf(stderr, "%s: fdopen failed: %s\n", progname, strerror(errno));
 	exit(EXIT_FAILURE);
     }
+    return fp;
 }
 
 void show_banner(void)
