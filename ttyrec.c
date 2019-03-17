@@ -55,6 +55,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <errno.h>
 
 #if defined(SVR4)
 #include <fcntl.h>
@@ -92,6 +93,7 @@
 
 void done(int status);
 void fail(void);
+void resize(int);
 void fixtty(void);
 void getmaster(void);
 void getslave(void);
@@ -119,11 +121,14 @@ char	line[] = "/dev/ptyXX";
 int	aflg;
 int	uflg;
 
+int resized;
+
 int
 main(argc, argv)
 	int argc;
 	char *argv[];
 {
+	struct sigaction sa;
 	extern int optind;
 	int ch;
 	void finish();
@@ -184,6 +189,11 @@ main(argc, argv)
 			dooutput();
 		else
 			doshell(command);
+	} else {
+		sigemptyset(&sa.sa_mask);
+		sa.sa_flags = 0;
+		sa.sa_handler = resize;
+		sigaction(SIGWINCH, &sa, NULL);
 	}
 	doinput();
 
@@ -198,10 +208,19 @@ doinput()
 
 	(void) fclose(fscript);
 #ifdef HAVE_openpty
+#if 0
 	(void) close(slave);
 #endif
-	while ((cc = read(0, ibuf, BUFSIZ)) > 0)
-		(void) write(master, ibuf, cc);
+#endif
+	while (1) {
+		if ((cc = read(0, ibuf, BUFSIZ)) > 0) {
+			(void) write(master, ibuf, cc);
+		} else if (cc == -1 && errno == EINTR && resized) {
+			resized = 0;
+		} else {
+			break;
+		}
+	}
 	done(0);
 }
 
@@ -234,6 +253,14 @@ finish()
 	if (die) {
 		done(exit_status);
 	}
+}
+
+void
+resize(int dummy)
+{
+	resized = 1;
+	(void) ioctl(0, TIOCGWINSZ, (char *)&win);
+	(void) ioctl(slave, TIOCSWINSZ, (char *)&win);
 }
 
 struct linebuf {

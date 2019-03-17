@@ -38,6 +38,8 @@
 #include "io.h"
 #include "ttyrec.h"
 
+int set_progname(char*);
+
 int
 calc_time (const char *filename)
 {
