@@ -1,3 +1,4 @@
+build.h
 *.o
 ttyrec
 ttyplay
