@@ -25,3 +25,16 @@ Usage:
 Have fun!
 
 -- Satoru Takabayashi <satoru@namazu.org>
+
+----------------------------------------------------------------------
+
+UPDATES / FIXES
+
+This fork has additional features on top of the original ttyrec / ttyplay
+
+- Handle SIGWINCH in ttyrec
+- Fix Mac OS X builds
+- Propagate exit code from command
+- Add per-line timestamps in ttyplay
+- Add logarithmic wait mode
+- Add pause / resume / next / quit / toggle times / help keyboard shortcuts for ttyplay
